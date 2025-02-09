@@ -60,11 +60,11 @@
 
         function generatePostHTML(post) {
             const subworldLink = post.subworld_id ? 
-                `<a href="/subworld/${post.subworld_id}" class="text-blue-600 hover:underline">${post.subworld_name}</a>` : 
+                `<a href="/api/subworlds/subworld/${post.subworld_id}" class="text-blue-600 hover:underline">${post.subworld_name}</a>` : 
                 "Unknown Subworld";
 
             const userLink = post.user_id ? 
-                `<a href="/user/${post.user_id}" class="text-blue-600 hover:underline">${post.user_name}</a>` : 
+                `<a href="/api/users/user/${post.user_id}" class="text-blue-600 hover:underline">${post.user_name}</a>` : 
                 "Unknown User";
 
             const upvoteClass = post.user_vote === 1 ? "text-green-500" : "text-gray-500";
@@ -100,7 +100,7 @@
 
                     <div class="w-full">
                         <h2 class="text-lg font-bold text-gray-900">
-                            <a href="/post/${post.id}" class="hover:underline">${post.title}</a>
+                            <a href="api/posts/post/${post.id}" class="hover:underline">${post.title}</a>
                         </h2>
                         <p class="text-sm text-gray-500">
                             Posted in ${subworldLink} by ${userLink} · ${new Date(post.createdAt).toLocaleDateString()}

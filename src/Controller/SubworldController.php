@@ -116,12 +116,46 @@ class SubworldController extends AbstractController
              GROUP BY p.id, u.id
              ORDER BY p.createdAt DESC'
         )->setParameter('subworld', $subworld)
-         ->getResult();
+            ->getResult();
 
         return $this->render('subworld/show.html.twig', [
             'subworld' => $subworld,
             'member_count' => $memberCount,
             'posts' => $query
         ]);
+    }
+
+    #[Route('/subworld/{id}/join', name: 'subworld_join', methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function joinSubworld(Subworld $subworld, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if ($subworld->getMembers()->contains($user)) {
+            return new JsonResponse(['message' => 'Already a member', 'status' => 'joined', 'member_count' => count($subworld->getMembers())]);
+        }
+
+        $subworld->addMember($user);
+        $em->persist($subworld);
+        $em->flush();
+
+        return new JsonResponse(['message' => 'Joined successfully', 'status' => 'joined', 'member_count' => count($subworld->getMembers())]);
+    }
+
+    #[Route('/subworld/{id}/leave', name: 'subworld_leave', methods: ['POST'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function leaveSubworld(Subworld $subworld, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $this->getUser();
+
+        if (!$subworld->getMembers()->contains($user)) {
+            return new JsonResponse(['message' => 'Not a member', 'status' => 'left', 'member_count' => count($subworld->getMembers())]);
+        }
+
+        $subworld->removeMember($user);
+        $em->persist($subworld);
+        $em->flush();
+
+        return new JsonResponse(['message' => 'Left successfully', 'status' => 'left', 'member_count' => count($subworld->getMembers())]);
     }
 }
